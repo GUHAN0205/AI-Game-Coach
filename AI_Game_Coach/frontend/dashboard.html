@@ -3,75 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <title>AI Game Coach Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <div class="dashboard-card">
+<div class="dashboard-card">
 
-        <h1>🎮 AI Game Coach</h1>
+    <h1>🎮 AI Game Coach Dashboard</h1>
 
-        <!-- GAME SELECT -->
-        <label>Select Game</label>
-        <select id="game">
-            <option value="chess">♟ Chess</option>
-            <option value="carrom">🎯 Carrom</option>
-            <option value="ludo">🎲 Ludo</option>
-            <option value="uno">🃏 UNO</option>
-            <option value="snake_ladder">🐍 Snake & Ladder</option>
-        </select>
+    <!-- GAME SELECTION -->
+    <label for="game">Select Game</label>
+    <select id="game">
+        <option value="chess">♟ Chess</option>
+        <option value="carrom">🎯 Carrom</option>
+        <option value="ludo">🎲 Ludo</option>
+        <option value="uno">🃏 UNO</option>
+        <option value="snake_ladder">🐍 Snake & Ladder</option>
+    </select>
 
-        <!-- INPUT GRID -->
-        <div class="grid">
-            <input id="matches" type="number" placeholder="Matches Played">
-            <input id="wins" type="number" placeholder="Wins">
-            <input id="blunders" type="number" placeholder="Mistakes / Fouls">
-            <input id="endgame_losses" type="number" placeholder="Endgame Losses / Snake Hits">
-            <input id="safe_moves" type="number" placeholder="Safe Moves / Wild Cards">
-            <input id="risky_moves" type="number" placeholder="Risky Moves / Penalties">
-        </div>
-
-        <!-- BUTTON -->
-        <button class="neon-btn" onclick="analyze()">GET AI STRATEGY</button>
-
-        <!-- OUTPUT -->
-        <h2>🧠 AI Coach Feedback</h2>
-        <ul id="result"></ul>
-
+    <!-- INPUT GRID -->
+    <div class="grid">
+        <input id="matches" type="number" placeholder="Matches Played">
+        <input id="wins" type="number" placeholder="Wins">
+        <input id="blunders" type="number" placeholder="Mistakes / Fouls / Blunders">
+        <input id="endgame_losses" type="number" placeholder="Endgame Losses / Snake Hits">
+        <input id="safe_moves" type="number" placeholder="Safe Moves / Wild Cards">
+        <input id="risky_moves" type="number" placeholder="Risky Moves / Penalties">
     </div>
 
-    <script>
-        function analyze() {
-            const data = {
-                game: game.value,
-                matches: parseInt(matches.value || 0),
-                wins: parseInt(wins.value || 0),
-                blunders: parseInt(blunders.value || 0),
-                endgame_losses: parseInt(endgame_losses.value || 0),
-                safe_moves: parseInt(safe_moves.value || 0),
-                risky_moves: parseInt(risky_moves.value || 0),
-                penalty_cards: parseInt(risky_moves.value || 0),
-                wild_card_usage: parseInt(safe_moves.value || 0),
-                snake_hits: parseInt(endgame_losses.value || 0)
-            };
+    <!-- BUTTON -->
+    <button class="neon-btn" onclick="analyze()">GET AI STRATEGY</button>
 
-            fetch("http://127.0.0.1:5000/analyze", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            })
-            .then(res => res.json())
-            .then(res => {
-                result.innerHTML = "";
-                res.ai_coach_feedback.forEach(msg => {
-                    const li = document.createElement("li");
-                    li.textContent = msg;
-                    result.appendChild(li);
-                });
-            })
-            .catch(() => alert("Backend not responding. Check server."));
+    <!-- OUTPUT -->
+    <div class="output">
+        <h2>🧠 AI Coach Feedback</h2>
+        <ul id="result"></ul>
+    </div>
+
+</div>
+
+<script>
+function analyze() {
+
+    const payload = {
+        game: document.getElementById("game").value,
+        matches: parseInt(document.getElementById("matches").value || 0),
+        wins: parseInt(document.getElementById("wins").value || 0),
+        blunders: parseInt(document.getElementById("blunders").value || 0),
+        endgame_losses: parseInt(document.getElementById("endgame_losses").value || 0),
+        safe_moves: parseInt(document.getElementById("safe_moves").value || 0),
+        risky_moves: parseInt(document.getElementById("risky_moves").value || 0),
+        penalty_cards: parseInt(document.getElementById("risky_moves").value || 0),
+        wild_card_usage: parseInt(document.getElementById("safe_moves").value || 0),
+        snake_hits: parseInt(document.getElementById("endgame_losses").value || 0)
+    };
+
+    fetch("https://ai-game-coach-backend.onrender.com/analyze", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        const result = document.getElementById("result");
+        result.innerHTML = "";
+
+        if (!data.ai_coach_feedback || data.ai_coach_feedback.length === 0) {
+            result.innerHTML = "<li>No feedback received.</li>";
+            return;
         }
-    </script>
+
+        data.ai_coach_feedback.forEach(feedback => {
+            const li = document.createElement("li");
+            li.textContent = feedback;
+            result.appendChild(li);
+        });
+    })
+    .catch(error => {
+        alert("Backend not responding. Please wait 30 seconds and try again.");
+        console.error(error);
+    });
+}
+</script>
 
 </body>
 </html>
