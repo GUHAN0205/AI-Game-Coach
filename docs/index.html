@@ -3,164 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <title>AI Game Coach Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* ---------- GLOBAL ---------- */
 body {
-  margin: 0;
-  font-family: "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top, #2b0055, #090014);
-  color: #ffffff;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at top, #3b0066, #0b0014);
+    color: #fff;
 }
 
-/* ---------- CONTAINER ---------- */
-.container {
-  max-width: 1000px;
-  margin: auto;
-  padding: 40px 20px;
-  text-align: center;
-}
-
-/* ---------- TITLE ---------- */
 h1 {
-  font-size: 36px;
-  margin-bottom: 30px;
-  color: #00ffe7;
-  text-shadow: 0 0 15px #00ffe7aa;
+    text-align: center;
+    color: #00fff0;
+    text-shadow: 0 0 15px #00fff0;
 }
 
-/* ---------- CARD ---------- */
-.card {
-  background: rgba(0, 0, 0, 0.7);
-  padding: 30px;
-  border-radius: 18px;
-  box-shadow: 0 0 30px #00ffe755;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    background: rgba(0,0,0,0.7);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 0 30px #00fff0;
 }
 
-/* ---------- INPUTS ---------- */
-select, input {
-  padding: 14px;
-  border-radius: 12px;
-  border: none;
-  font-size: 16px;
-  outline: none;
+input, select {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: none;
+    margin: 8px 0;
+    font-size: 16px;
 }
 
-/* ---------- BUTTON ---------- */
 button {
-  grid-column: span 2;
-  margin-top: 10px;
-  padding: 16px;
-  font-size: 20px;
-  font-weight: bold;
-  border-radius: 14px;
-  border: none;
-  cursor: pointer;
-  background: linear-gradient(90deg, #00ffe7, #00b3ff);
-  color: #000;
-  box-shadow: 0 0 25px #00ffe7aa;
-  transition: transform 0.2s ease;
+    width: 100%;
+    padding: 16px;
+    margin-top: 20px;
+    font-size: 18px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #00ffe1, #00b7ff);
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 button:hover {
-  transform: scale(1.05);
+    transform: scale(1.03);
 }
 
-/* ---------- RESULT ---------- */
-.result {
-  margin-top: 35px;
-  padding: 25px;
-  border-radius: 16px;
-  background: rgba(0, 0, 0, 0.7);
-  box-shadow: 0 0 25px #00ffe744;
+.section {
+    margin-top: 25px;
+    padding: 20px;
+    background: rgba(0,0,0,0.8);
+    border-radius: 15px;
+    box-shadow: 0 0 15px #00fff0;
 }
 
-.result h2 {
-  margin-bottom: 10px;
-  color: #00ffe7;
+.section h2 {
+    color: #00fff0;
 }
 
-footer {
-  margin-top: 40px;
-  opacity: 0.7;
-  font-size: 14px;
+ul {
+    line-height: 1.8;
 }
 </style>
 </head>
 
 <body>
 
+<h1>🎮 AI Game Coach Dashboard</h1>
+
 <div class="container">
-  <h1>🎮 AI Game Coach Dashboard</h1>
 
-  <div class="card">
-    <select id="game">
-      <option value="snake">Snake & Ladder</option>
-      <option value="chess">Chess</option>
-      <option value="ludo">Ludo</option>
-      <option value="uno">UNO</option>
-    </select>
+<select id="game">
+    <option value="snake">Snake & Ladder</option>
+    <option value="uno">UNO</option>
+    <option value="chess">Chess</option>
+    <option value="ludo">Ludo</option>
+</select>
 
-    <input type="number" id="matches" placeholder="Matches Played">
-    <input type="number" id="wins" placeholder="Wins">
-    <input type="number" id="mistakes" placeholder="Mistakes / Fouls / Blunders">
-    <input type="number" id="endgame" placeholder="Endgame Losses / Snake Hits">
-    <input type="number" id="safe" placeholder="Safe Moves">
-    <input type="number" id="risky" placeholder="Risky Moves">
+<input type="number" id="matches" placeholder="Matches Played">
+<input type="number" id="wins" placeholder="Wins">
+<input type="number" id="mistakes" placeholder="Mistakes">
+<input type="number" id="endgame" placeholder="Endgame Losses">
+<input type="number" id="safe" placeholder="Safe Moves">
+<input type="number" id="risky" placeholder="Risky Moves">
 
-    <button onclick="getFeedback()">Get AI Feedback</button>
-  </div>
+<button onclick="getFeedback()">Get AI Feedback</button>
 
-  <div class="result">
-    <h2>AI Coach Feedback</h2>
-    <p id="feedback">Enter game data and click the button.</p>
-  </div>
+<div id="result"></div>
 
-  <footer>
-    AI Game Coach · Final Year Project
-  </footer>
 </div>
 
 <script>
-/* ===== BACKEND URL (Render) ===== */
-const BACKEND_URL = "https://ai-game-coach-backend.onrender.com";
-
-/* ===== MAIN FUNCTION ===== */
 async function getFeedback() {
+    const payload = {
+        game: document.getElementById("game").value,
+        matches: Number(matches.value),
+        wins: Number(wins.value),
+        mistakes: Number(mistakes.value),
+        endgame_losses: Number(endgame.value),
+        safe_moves: Number(safe.value),
+        risky_moves: Number(risky.value)
+    };
 
-  const feedbackEl = document.getElementById("feedback");
+    try {
+        const res = await fetch("https://ai-game-coach-backend.onrender.com/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
 
-  const data = {
-    game: document.getElementById("game").value,
-    matches: Number(document.getElementById("matches").value),
-    wins: Number(document.getElementById("wins").value),
-    mistakes: Number(document.getElementById("mistakes").value),
-    endgame_losses: Number(document.getElementById("endgame").value),
-    safe_moves: Number(document.getElementById("safe").value),
-    risky_moves: Number(document.getElementById("risky").value),
-  };
+        const data = await res.json();
+        renderStrategies(payload, data.feedback);
 
-  feedbackEl.innerText =
-    "⏳ Backend waking up (Render free tier). Please wait...";
+    } catch {
+        alert("Backend not responding. Please wait or refresh.");
+    }
+}
 
-  try {
-    const response = await fetch(`${BACKEND_URL}/analyze`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    });
+function renderStrategies(input, feedback) {
 
-    const result = await response.json();
-    feedbackEl.innerText = result.feedback;
+    let winRate = ((input.wins / input.matches) * 100).toFixed(1);
 
-  } catch (error) {
-    feedbackEl.innerText =
-      "❌ Backend not responding. Wait 30 seconds and click again.";
-  }
+    document.getElementById("result").innerHTML = `
+    <div class="section">
+        <h2>📊 Performance Analysis</h2>
+        <ul>
+            <li>Win Rate: <b>${winRate}%</b></li>
+            <li>${winRate > 70 ? "High performance – maintain consistency." :
+                winRate > 40 ? "Moderate performance – improve mistakes." :
+                "Low performance – strategy overhaul needed."}
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>⚖️ Risk Management Strategy</h2>
+        <ul>
+            <li>Safe Moves: ${input.safe_moves}</li>
+            <li>Risky Moves: ${input.risky_moves}</li>
+            <li>${input.risky_moves > input.safe_moves
+                ? "Reduce risky decisions and focus on safe plays."
+                : "Good balance between safety and aggression."}
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Game-Specific Strategy</h2>
+        <ul>
+            ${getGameStrategy(input.game)}
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🪜 Step-by-Step Improvement Plan</h2>
+        <ol>
+            <li>Analyze past mistakes after each match.</li>
+            <li>Reduce risky moves during endgame phases.</li>
+            <li>Focus on safe positioning before aggressive plays.</li>
+            <li>Track opponent patterns and adapt strategies.</li>
+            <li>Review AI feedback weekly and adjust gameplay.</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>🤖 AI Coach Summary</h2>
+        <p>${feedback}</p>
+    </div>
+    `;
+}
+
+function getGameStrategy(game) {
+    if (game === "snake") {
+        return `
+        <li>Avoid high-risk rolls near snakes.</li>
+        <li>Use ladders strategically rather than chasing them.</li>
+        <li>Maintain position control over speed.</li>`;
+    }
+    if (game === "uno") {
+        return `
+        <li>Track opponent card colors.</li>
+        <li>Save wild cards for critical turns.</li>
+        <li>Force opponents to draw cards early.</li>`;
+    }
+    if (game === "chess") {
+        return `
+        <li>Control the center in openings.</li>
+        <li>Avoid early queen exposure.</li>
+        <li>Plan endgame pawn structures.</li>`;
+    }
+    if (game === "ludo") {
+        return `
+        <li>Prioritize bringing all tokens out.</li>
+        <li>Use safe zones effectively.</li>
+        <li>Block opponents strategically.</li>`;
+    }
 }
 </script>
 
