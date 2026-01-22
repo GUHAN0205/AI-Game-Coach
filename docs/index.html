@@ -6,90 +6,88 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
-
-* {
-  box-sizing: border-box;
-  font-family: 'Orbitron', sans-serif;
-}
-
+/* ---------- GLOBAL ---------- */
 body {
   margin: 0;
-  min-height: 100vh;
-  background: radial-gradient(circle at top, #1b0036, #050014);
-  color: #fff;
+  font-family: "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #2b0055, #090014);
+  color: #ffffff;
 }
 
+/* ---------- CONTAINER ---------- */
 .container {
-  max-width: 1100px;
+  max-width: 1000px;
   margin: auto;
   padding: 40px 20px;
+  text-align: center;
 }
 
+/* ---------- TITLE ---------- */
 h1 {
-  text-align: center;
-  font-size: 2.8rem;
+  font-size: 36px;
   margin-bottom: 30px;
   color: #00ffe7;
-  text-shadow: 0 0 20px #00ffe7;
+  text-shadow: 0 0 15px #00ffe7aa;
 }
 
-.panel {
-  background: rgba(0, 0, 0, 0.6);
-  border: 2px solid #00ffe7;
-  border-radius: 20px;
+/* ---------- CARD ---------- */
+.card {
+  background: rgba(0, 0, 0, 0.7);
   padding: 30px;
-  box-shadow: 0 0 40px rgba(0, 255, 231, 0.2);
-}
-
-.grid {
+  border-radius: 18px;
+  box-shadow: 0 0 30px #00ffe755;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  margin-bottom: 25px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
 }
 
+/* ---------- INPUTS ---------- */
 select, input {
   padding: 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: none;
+  font-size: 16px;
   outline: none;
-  font-size: 1rem;
 }
 
+/* ---------- BUTTON ---------- */
 button {
-  width: 100%;
+  grid-column: span 2;
+  margin-top: 10px;
   padding: 16px;
-  font-size: 1.2rem;
-  background: linear-gradient(90deg, #00ffe7, #00b3ff);
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
+  font-size: 20px;
   font-weight: bold;
-  box-shadow: 0 0 20px #00ffe7;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, #00ffe7, #00b3ff);
+  color: #000;
+  box-shadow: 0 0 25px #00ffe7aa;
+  transition: transform 0.2s ease;
 }
 
 button:hover {
   transform: scale(1.05);
 }
 
-.feedback {
-  margin-top: 30px;
-  padding: 20px;
-  border-radius: 15px;
-  background: rgba(0, 255, 231, 0.1);
-  border-left: 6px solid #00ffe7;
+/* ---------- RESULT ---------- */
+.result {
+  margin-top: 35px;
+  padding: 25px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 25px #00ffe744;
 }
 
-.feedback h2 {
-  color: #00ffe7;
+.result h2 {
   margin-bottom: 10px;
+  color: #00ffe7;
 }
 
-.footer {
-  text-align: center;
+footer {
   margin-top: 40px;
-  opacity: 0.6;
+  opacity: 0.7;
+  font-size: 14px;
 }
 </style>
 </head>
@@ -97,68 +95,72 @@ button:hover {
 <body>
 
 <div class="container">
-  <h1>🎮 AI Game Coach</h1>
+  <h1>🎮 AI Game Coach Dashboard</h1>
 
-  <div class="panel">
+  <div class="card">
+    <select id="game">
+      <option value="snake">Snake & Ladder</option>
+      <option value="chess">Chess</option>
+      <option value="ludo">Ludo</option>
+      <option value="uno">UNO</option>
+    </select>
 
-    <div class="grid">
-      <select id="game">
-        <option value="chess">Chess</option>
-        <option value="uno">UNO</option>
-        <option value="ludo">Ludo</option>
-        <option value="snake_ladder">Snake & Ladder</option>
-      </select>
-
-      <input type="number" id="matches" placeholder="Matches Played">
-      <input type="number" id="wins" placeholder="Wins">
-      <input type="number" id="mistakes" placeholder="Mistakes / Fouls">
-      <input type="number" id="endgame" placeholder="Endgame Losses / Hits">
-      <input type="number" id="safe" placeholder="Safe Moves">
-      <input type="number" id="risky" placeholder="Risky Moves">
-    </div>
+    <input type="number" id="matches" placeholder="Matches Played">
+    <input type="number" id="wins" placeholder="Wins">
+    <input type="number" id="mistakes" placeholder="Mistakes / Fouls / Blunders">
+    <input type="number" id="endgame" placeholder="Endgame Losses / Snake Hits">
+    <input type="number" id="safe" placeholder="Safe Moves">
+    <input type="number" id="risky" placeholder="Risky Moves">
 
     <button onclick="getFeedback()">Get AI Feedback</button>
-
-    <div class="feedback" id="feedbackBox" style="display:none;">
-      <h2>AI Coach Strategy</h2>
-      <p id="feedbackText"></p>
-    </div>
-
   </div>
 
-  <div class="footer">
-    AI Game Coach • Final Year Project
+  <div class="result">
+    <h2>AI Coach Feedback</h2>
+    <p id="feedback">Enter game data and click the button.</p>
   </div>
+
+  <footer>
+    AI Game Coach · Final Year Project
+  </footer>
 </div>
 
 <script>
+/* ===== BACKEND URL (Render) ===== */
 const BACKEND_URL = "https://ai-game-coach-backend.onrender.com";
 
-function getFeedback() {
+/* ===== MAIN FUNCTION ===== */
+async function getFeedback() {
+
+  const feedbackEl = document.getElementById("feedback");
+
   const data = {
     game: document.getElementById("game").value,
-    matches_played: Number(document.getElementById("matches").value),
+    matches: Number(document.getElementById("matches").value),
     wins: Number(document.getElementById("wins").value),
     mistakes: Number(document.getElementById("mistakes").value),
     endgame_losses: Number(document.getElementById("endgame").value),
     safe_moves: Number(document.getElementById("safe").value),
-    risky_moves: Number(document.getElementById("risky").value)
+    risky_moves: Number(document.getElementById("risky").value),
   };
 
-  fetch(`${BACKEND_URL}/analyze`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data)
-  })
-  .then(res => res.json())
-  .then(result => {
-    document.getElementById("feedbackBox").style.display = "block";
-    document.getElementById("feedbackText").innerHTML =
-      result.feedback.join("<br>• ");
-  })
-  .catch(() => {
-    alert("Backend not responding. Please wait or refresh.");
-  });
+  feedbackEl.innerText =
+    "⏳ Backend waking up (Render free tier). Please wait...";
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/analyze`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    feedbackEl.innerText = result.feedback;
+
+  } catch (error) {
+    feedbackEl.innerText =
+      "❌ Backend not responding. Wait 30 seconds and click again.";
+  }
 }
 </script>
 
